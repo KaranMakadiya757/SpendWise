@@ -21,9 +21,11 @@ app.use(cookieparser());
 
 // Router imports
 import healthcheckRouter from "./Routes/HealthCheck";
+import userRouter from "./Routes/user.routes";
 
 // Routes
 app.use("/api/v1/healthcheck", healthcheckRouter);
+app.use("/api/v1/auth", userRouter);
 
 // ERROR HANDLER
 app.use(errorHandler);
