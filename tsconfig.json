@@ -16,7 +16,9 @@
   ],
   "compileOnSave": true,
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/Types/express.d.ts"
   ],
   "exclude": [
     "node_modules"
