@@ -1,5 +1,6 @@
 import { Router } from "express";
 import validate from "../Middlewares/validation.middleware";
+import { upload } from "../Middlewares/multer.middleware";
 
 import {
     registerUser,
@@ -26,7 +27,7 @@ import {
 const router = Router();
 
 // register
-router.route("/register").post(validate(userValidationSchema), registerUser);
+router.route("/register").post(upload.single("profilepic"), validate(userValidationSchema), registerUser);
 
 // login
 router.route("/login").post(validate(userLoginValidationSchema), loginUser);
@@ -46,7 +47,7 @@ router.route("/refresh-token").post(refreshAccessToken);
 router.route("/user").get(getUser);
 
 // update user details
-router.route("/user").patch(updateUser);
+router.route("/user").put(upload.single("profilepic"), validate(userValidationSchema), updateUser);
 
 // change password
 router.route("/changepassword").patch(validate(changepasswordValidationSchema), changePassword);
