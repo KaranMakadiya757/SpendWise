@@ -53,9 +53,72 @@ const userValidationSchema = Joi.object({
             "any.required": "Password is required",
         }),
 
-    profilepic: Joi.string().trim().optional().allow("").allow(null).messages({
-        "string.base": "Profile picture must be a string",
-        "string.empty": "Profile picture is required",
+    phonenumber: Joi.string()
+        .trim()
+        .required()
+        .pattern(/^\d{10}$/)
+        .messages({
+            "string.base": "Phone number must be a string",
+            "string.empty": "Phone number is required",
+            "any.required": "Phone number is required",
+            "string.pattern.base": "Phone number must contain exactly 10 digits",
+        }),
+
+    dob: Joi.date().required().less("now").messages({
+        "date.base": "Date of birth must be a valid date",
+        "any.required": "Date of birth is required",
+        "date.less": "Date of birth must be in the past",
+    }),
+
+    gender: Joi.string().lowercase().valid("male", "female", "other").required().messages({
+        "string.base": "Gender must be a string",
+        "any.only": "Gender must be one of 'male', 'female', or 'other'",
+        "any.required": "Gender is required",
+    }),
+    wallet_balance: Joi.number().optional().min(0).messages({
+        "number.base": "Wallet balance must be a number",
+        "number.min": "Wallet balance cannot be negative",
+    }),
+});
+
+const userUpdateValidationSchema = Joi.object({
+    name: Joi.string()
+        .trim()
+        .lowercase()
+        .required()
+        .min(3)
+        .max(10)
+        .pattern(/^[a-zA-Z0-9_]+$/)
+        .messages({
+            "string.base": "Name must be a string",
+            "string.empty": "Name is required",
+            "any.required": "Name is required",
+            "string.min": "Name must be at least 3 characters long",
+            "string.max": "Name must not exceed 10 characters",
+            "string.pattern.base": "Only alphanumeric characters and underscore are allowed",
+        }),
+
+    surname: Joi.string()
+        .trim()
+        .lowercase()
+        .required()
+        .min(3)
+        .max(10)
+        .pattern(/^[a-zA-Z0-9_]+$/)
+        .messages({
+            "string.base": "Surname must be a string",
+            "string.empty": "Surname is required",
+            "any.required": "Surname is required",
+            "string.min": "Surname must be at least 3 characters long",
+            "string.max": "Surname must not exceed 10 characters",
+            "string.pattern.base": "Only alphanumeric characters and underscore are allowed",
+        }),
+
+    email: Joi.string().trim().lowercase().email().required().messages({
+        "string.base": "Email must be a string",
+        "string.empty": "Email is required",
+        "string.email": "Email must be a valid email address",
+        "any.required": "Email is required",
     }),
 
     phonenumber: Joi.string()
@@ -75,7 +138,7 @@ const userValidationSchema = Joi.object({
         "date.less": "Date of birth must be in the past",
     }),
 
-    gender: Joi.string().valid("male", "female", "other").required().messages({
+    gender: Joi.string().lowercase().valid("male", "female", "other").required().messages({
         "string.base": "Gender must be a string",
         "any.only": "Gender must be one of 'male', 'female', or 'other'",
         "any.required": "Gender is required",
@@ -83,6 +146,15 @@ const userValidationSchema = Joi.object({
     wallet_balance: Joi.number().optional().min(0).messages({
         "number.base": "Wallet balance must be a number",
         "number.min": "Wallet balance cannot be negative",
+    }),
+});
+
+const userUpdateBalanceValidationSchema = Joi.object({
+    amount: Joi.number().required().min(0).messages({
+        "string.base": "Amount must be a string",
+        "string.empty": "Amount is required",
+        "number.base": "Amount must be a number",
+        "number.min": "Amount cannot be negative",
     }),
 });
 
@@ -163,8 +235,10 @@ const changepasswordValidationSchema = Joi.object({
 
 export {
     userValidationSchema,
+    userUpdateValidationSchema,
     userLoginValidationSchema,
     changepasswordValidationSchema,
     userLoginWithOtpValidationSchema,
+    userUpdateBalanceValidationSchema,
     userOtpValidationSchema,
 };

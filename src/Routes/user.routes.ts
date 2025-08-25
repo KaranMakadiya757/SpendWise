@@ -1,61 +1,28 @@
 import { Router } from "express";
-import validate from "../Middlewares/validation.middleware";
 import { upload } from "../Middlewares/multer.middleware";
+import { verifyJWT } from "../Middlewares/auth.middleware";
+import validate from "../Middlewares/validation.middleware";
 
-import {
-    registerUser,
-    loginUser,
-    sendOTP,
-    verifyOTP,
-    refreshAccessToken,
-    changePassword,
-    logoutUser,
-    getUser,
-    updateUser,
-    deleteUser,
-} from "../Controllers/user.controller";
+import { getUser, updateUser, deleteUser, updateUserBalance } from "../Controllers/user.controller";
 
-import {
-    userValidationSchema,
-    userLoginValidationSchema,
-    changepasswordValidationSchema,
-    userLoginWithOtpValidationSchema,
-    userOtpValidationSchema,
-} from "../Validations/user.validator";
+import { userUpdateBalanceValidationSchema, userUpdateValidationSchema } from "../Validations/user.validator";
 
 // create router instance
 const router = Router();
 
-// register
-router.route("/register").post(upload.single("profilepic"), validate(userValidationSchema), registerUser);
-
-// login
-router.route("/login").post(validate(userLoginValidationSchema), loginUser);
-
-// send otp
-router.route("/login/send-otp").post(validate(userLoginWithOtpValidationSchema), sendOTP);
-
-// verify otp
-router.route("/login/verify-otp").post(validate(userOtpValidationSchema), verifyOTP);
-
-// refresh accesstoken
-router.route("/refresh-token").post(refreshAccessToken);
-
 // SECURED ROUTES
+router.use(verifyJWT);
 
 // get user details
-router.route("/user").get(getUser);
+router.route("/").get(getUser);
 
 // update user details
-router.route("/user").put(upload.single("profilepic"), validate(userValidationSchema), updateUser);
+router.route("/").put(upload.single("profilepic"), validate(userUpdateValidationSchema), updateUser);
 
-// change password
-router.route("/changepassword").patch(validate(changepasswordValidationSchema), changePassword);
-
-// logout
-router.route("/logout").post(logoutUser);
+// update user balance
+router.route("/balance").patch(validate(userUpdateBalanceValidationSchema), updateUserBalance);
 
 // delete user
-router.route("/user").delete(deleteUser);
+router.route("/").delete(deleteUser);
 
 export default router;

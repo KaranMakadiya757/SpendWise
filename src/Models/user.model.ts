@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
+import { IUser, IUserMethods } from "../Types/user.types";
+import { deleteFromCloudinary } from "../Utils/fileOperation";
 
-const userSchema = new Schema(
+const userSchema = new Schema<IUser, mongoose.Model<IUser, {}, IUserMethods>, IUserMethods>(
     {
         name: {
             type: String,
@@ -78,6 +80,14 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
+userSchema.pre("findOneAndDelete", async function (next) {
+    const user = await this.model.findOne(this.getQuery());
+
+    await deleteFromCloudinary(user.profilepic);
+
+    next();
+});
+
 userSchema.methods.isPasswordCorrect = async function (password: string) {
     return await bcrypt.compare(password, this.password);
 };
@@ -86,7 +96,7 @@ userSchema.methods.isOtpCorrect = async function (otp: string) {
     if (!this.otp) return false;
 
     const isValid = await bcrypt.compare(otp, this.otp);
-    const isExpired = this.otp_expiry && Date.now() > this.otp_expiry;
+    const isExpired = this.otp_expiry ? new Date() > this.otp_expiry : false;
 
     return isValid && !isExpired;
 };
@@ -97,8 +107,7 @@ userSchema.methods.generateAccessToken = function () {
 
     const options: jwt.SignOptions = {};
     const expiresIn = process.env.ACCESS_TOKEN_EXPIRY;
-    if (expiresIn)
-        options.expiresIn = expiresIn as jwt.SignOptions["expiresIn"];
+    if (expiresIn) options.expiresIn = expiresIn as jwt.SignOptions["expiresIn"];
 
     return jwt.sign(
         {
@@ -116,8 +125,7 @@ userSchema.methods.generateRefreshToken = function () {
 
     const options: jwt.SignOptions = {};
     const expiresIn = process.env.REFRESH_TOKEN_EXPIRY;
-    if (expiresIn)
-        options.expiresIn = expiresIn as jwt.SignOptions["expiresIn"];
+    if (expiresIn) options.expiresIn = expiresIn as jwt.SignOptions["expiresIn"];
 
     return jwt.sign(
         {
@@ -129,4 +137,14 @@ userSchema.methods.generateRefreshToken = function () {
     );
 };
 
-export const User = mongoose.model("User", userSchema);
+userSchema.methods.generateAccessAndRefreshTokens = async function () {
+    const accessToken = await this.generateAccessToken();
+    const refreshToken = await this.generateRefreshToken();
+
+    this.refreshToken = refreshToken;
+    await this.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+};
+
+export const User = mongoose.model<IUser, mongoose.Model<IUser, {}, IUserMethods>>("User", userSchema);
