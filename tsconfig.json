@@ -8,8 +8,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "types": [
-      "node",
-      "express"
+      "node"
     ],
     "skipLibCheck": true
   },
