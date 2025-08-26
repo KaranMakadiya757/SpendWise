@@ -23,11 +23,13 @@ app.use(cookieparser());
 import healthcheckRouter from "./Routes/HealthCheck";
 import authRouter from "./Routes/auth.routes";
 import userRouter from "./Routes/user.routes";
+import categoryRouter from "./Routes/categories.routes";
 
 // Routes
 app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/category", categoryRouter);
 
 // ERROR HANDLER
 app.use(errorHandler);
