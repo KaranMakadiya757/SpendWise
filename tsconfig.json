@@ -9,12 +9,14 @@
     "outDir": "dist",
     "typeRoots": [
       "./node_modules/@types"
-    ],
-    "skipLibCheck": true
+    ]
   },
+  "lib": [
+    "es2018"
+  ],
+  "compileOnSave": true,
   "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules"
