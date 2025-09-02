@@ -1,5 +1,7 @@
 import cors from "cors";
 import express from "express";
+import { swaggerUi } from "./swagger";
+import { swaggerSpec } from "./swagger";
 import cookieparser from "cookie-parser";
 import errorHandler from "./Middlewares/errorhandler.middleware";
 
@@ -18,6 +20,9 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ limit: "16kb", extended: true }));
 app.use(express.static("public"));
 app.use(cookieparser());
+
+// Swagger Docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Router imports
 import healthcheckRouter from "./Routes/HealthCheck";
