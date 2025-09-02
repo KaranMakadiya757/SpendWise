@@ -25,7 +25,7 @@ app.use(cookieparser());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Router imports
-import healthcheckRouter from "./Routes/HealthCheck";
+import healthcheckRouter from "./Routes/healthcheck.routes";
 import authRouter from "./Routes/auth.routes";
 import userRouter from "./Routes/user.routes";
 import categoryRouter from "./Routes/categories.routes";
