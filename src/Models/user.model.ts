@@ -101,6 +101,15 @@ userSchema.methods.isOtpCorrect = async function (otp: string) {
     return isValid && !isExpired;
 };
 
+userSchema.methods.updateBalance = async function (amount: number, type: "income" | "expense") {
+    if (type === "income") {
+        this.wallet_balance = this.wallet_balance + amount;
+    } else {
+        this.wallet_balance = this.wallet_balance - amount;
+    }
+    await this.save({ validateBeforeSave: false });
+};
+
 userSchema.methods.generateAccessToken = function () {
     const secret = process.env.ACCESS_TOKEN_SECRET as jwt.Secret | undefined;
     if (!secret) throw new Error("ACCESS_TOKEN_SECRET is not defined");
