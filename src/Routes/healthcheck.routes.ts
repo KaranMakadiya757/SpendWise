@@ -13,7 +13,18 @@ const router = Router();
  *     security: []
  *     responses:
  *       200:
- *         description: Service is healthy
+ *         description: Server is running
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/SuccessResponse"
+ *             example:
+ *                 success: true
+ *                 statusCode: 200
+ *                 message: "Server is running"
+ *                 data: {}
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/").get(healthcheck);
 

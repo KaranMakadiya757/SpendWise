@@ -18,9 +18,19 @@ router.use(verifyJWT);
  *   get:
  *     summary: Get all categories for current user
  *     tags: [Category]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of categories
+ *         description: Categories fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/CategoryListResponse"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/").get(getCategories);
 
@@ -31,23 +41,27 @@ router.route("/").get(getCategories);
  *   post:
  *     summary: Add a new category
  *     tags: [Category]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               type:
- *                 type: string
- *                 enum: [income, expense]
+ *             $ref: "#/components/requests/CategoryRequest"
  *     responses:
  *       201:
- *         description: Category created
+ *         description: Category created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/CategoryResponse"
  *       400:
- *         description: Validation error
+ *         $ref: "#/components/errors/ValidationError"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/").post(validate(categoryValidationSchema), addCategory);
 
@@ -58,31 +72,36 @@ router.route("/").post(validate(categoryValidationSchema), addCategory);
  *   put:
  *     summary: Update a category
  *     tags: [Category]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: categoryId
  *         required: true
  *         schema:
  *           type: string
+ *         description: The ID of the category to update
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               type:
- *                 type: string
- *                 enum: [income, expense]
+ *             $ref: "#/components/requests/UpdateCategoryRequest"
  *     responses:
  *       200:
- *         description: Category updated
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/UpdateCategoryResponse"
  *       400:
- *         description: Validation error
+ *         $ref: "#/components/errors/ValidationError"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
  *       404:
- *         description: Category not found
+ *         $ref: "#/components/errors/NotFoundError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/:categoryId").put(validate(categoryValidationSchema), verifyId, updateCategory);
 
@@ -93,17 +112,28 @@ router.route("/:categoryId").put(validate(categoryValidationSchema), verifyId, u
  *   delete:
  *     summary: Delete a category
  *     tags: [Category]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: categoryId
  *         required: true
  *         schema:
  *           type: string
+ *         description: The ID of the category to delete
  *     responses:
  *       200:
- *         description: Category deleted
+ *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/DeleteCategoryResponse"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
  *       404:
- *         description: Category not found
+ *         $ref: "#/components/errors/NotFoundError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/:categoryId").delete(verifyId, deleteCategory);
 

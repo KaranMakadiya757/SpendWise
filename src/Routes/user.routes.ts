@@ -20,9 +20,21 @@ router.use(verifyJWT);
  *   get:
  *     summary: Get current user's profile
  *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/UserProfileResponse"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       404:
+ *         $ref: "#/components/errors/NotFoundError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/").get(getUser);
 
@@ -33,23 +45,27 @@ router.route("/").get(getUser);
  *   put:
  *     summary: Update current user's profile
  *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
- *             type: object
- *             properties:
- *               fullname:
- *                 type: string
- *               profilepic:
- *                 type: string
- *                 format: binary
+ *             $ref: "#/components/requests/UpdateUserRequest"
  *     responses:
  *       200:
- *         description: User updated
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/UpdateUserResponse"
  *       400:
- *         description: Validation error
+ *         $ref: "#/components/errors/ValidationError"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/").put(upload.single("profilepic"), validate(userUpdateValidationSchema), updateUser);
 
@@ -60,20 +76,27 @@ router.route("/").put(upload.single("profilepic"), validate(userUpdateValidation
  *   patch:
  *     summary: Update current user's balance
  *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               balance:
- *                 type: number
+ *             $ref: "#/components/requests/UpdateBalanceRequest"
  *     responses:
  *       200:
- *         description: Balance updated
+ *         description: Balance updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/UpdateBalanceResponse"
  *       400:
- *         description: Validation error
+ *         $ref: "#/components/errors/ValidationError"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/balance").patch(validate(userUpdateBalanceValidationSchema), updateUserBalance);
 
@@ -84,9 +107,21 @@ router.route("/balance").patch(validate(userUpdateBalanceValidationSchema), upda
  *   delete:
  *     summary: Delete current user's account
  *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User deleted
+ *         description: User account deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/DeleteUserResponse"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       404:
+ *         $ref: "#/components/errors/NotFoundError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/").delete(deleteUser);
 

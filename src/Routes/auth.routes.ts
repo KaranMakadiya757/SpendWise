@@ -37,28 +37,18 @@ const router = Router();
  *       content:
  *         multipart/form-data:
  *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               email:
- *                 type: string
- *                 format: email
- *               fullname:
- *                 type: string
- *               password:
- *                 type: string
- *                 format: password
- *               profilepic:
- *                 type: string
- *                 format: binary
+ *             $ref: "#/components/requests/RegisterRequest"
  *     responses:
  *       201:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/RegisterResponse"
  *       400:
- *         description: Bad request
- *       409:
- *         description: User already exists
+ *         $ref: "#/components/errors/ValidationError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/register").post(upload.single("profilepic"), validate(userValidationSchema), registerUser);
 
@@ -67,7 +57,7 @@ router.route("/register").post(upload.single("profilepic"), validate(userValidat
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login with email/username and password
+ *     summary: Login with email and password
  *     tags: [Auth]
  *     security: []
  *     requestBody:
@@ -75,21 +65,18 @@ router.route("/register").post(upload.single("profilepic"), validate(userValidat
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               identifier:
- *                 type: string
- *                 description: email or username
- *               password:
- *                 type: string
- *                 format: password
+ *             $ref: "#/components/requests/LoginRequest"
  *     responses:
  *       200:
  *         description: Logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/LoginResponse"
  *       400:
- *         description: Validation error
- *       401:
- *         description: Invalid credentials
+ *         $ref: "#/components/errors/ValidationError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/login").post(validate(userLoginValidationSchema), loginUser);
 
@@ -106,16 +93,18 @@ router.route("/login").post(validate(userLoginValidationSchema), loginUser);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               identifier:
- *                 type: string
- *                 description: email or username
+ *             $ref: "#/components/requests/SendOtpRequest"
  *     responses:
  *       200:
  *         description: OTP sent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/SendOtpResponse"
  *       400:
- *         description: Validation error
+ *         $ref: "#/components/errors/ValidationError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/login/send-otp").post(validate(userLoginWithOtpValidationSchema), sendOTP);
 
@@ -132,19 +121,18 @@ router.route("/login/send-otp").post(validate(userLoginWithOtpValidationSchema),
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               identifier:
- *                 type: string
- *               otp:
- *                 type: string
+ *             $ref: "#/components/requests/VerifyOtpRequest"
  *     responses:
  *       200:
  *         description: OTP verified, logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/VerifyOtpResponse"
  *       400:
- *         description: Validation error
- *       401:
- *         description: Invalid or expired OTP
+ *         $ref: "#/components/errors/ValidationError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/login/verify-otp").post(validate(userOtpValidationSchema), verifyOTP);
 
@@ -156,9 +144,23 @@ router.route("/login/verify-otp").post(validate(userOtpValidationSchema), verify
  *     summary: Refresh access token
  *     tags: [Auth]
  *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/requests/RefreshTokenRequest"
  *     responses:
  *       200:
  *         description: New access token issued
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/RefreshTokenResponse"
+ *       400:
+ *         $ref: "#/components/errors/ValidationError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/refresh-token").post(refreshAccessToken);
 
@@ -172,24 +174,27 @@ router.use(verifyJWT);
  *   patch:
  *     summary: Change current user's password
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               oldPassword:
- *                 type: string
- *               newPassword:
- *                 type: string
+ *             $ref: "#/components/requests/ChangePasswordRequest"
  *     responses:
  *       200:
  *         description: Password changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/ChangePasswordResponse"
  *       400:
- *         description: Validation error
+ *         $ref: "#/components/errors/ValidationError"
  *       401:
- *         description: Unauthorized
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/changepassword").patch(validate(changepasswordValidationSchema), changePassword);
 
@@ -200,9 +205,19 @@ router.route("/changepassword").patch(validate(changepasswordValidationSchema), 
  *   post:
  *     summary: Logout current user
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/responses/LogoutResponse"
+ *       401:
+ *         $ref: "#/components/errors/UnauthorizedError"
+ *       500:
+ *         $ref: "#/components/errors/ServerError"
  */
 router.route("/logout").post(logoutUser);
 
