@@ -11,7 +11,7 @@
 
 > The Expense SpendWise is built with Node.js that helps users efficiently manage their personal finances.
 
-### ✨ [Demo](https://spendwise-expensetracker.onrender.com)
+### ✨ [Demo](https://spendwise-expensetracker.onrender.com/api/v1/healthcheck)
 
 ## Install
 
